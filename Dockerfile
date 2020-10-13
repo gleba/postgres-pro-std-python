@@ -1,4 +1,14 @@
-FROM debian
+FROM debian:buster-slim
+
+RUN set -ex; \
+	if ! command -v gpg > /dev/null; then \
+		apt-get update; \
+		apt-get install -y --no-install-recommends \
+			gnupg \
+			dirmngr \
+		; \
+		rm -rf /var/lib/apt/lists/*; \
+	fi
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -34,6 +44,17 @@ RUN set -x \
 	&& gosu nobody true \
 	&& apt-get purge -y --auto-remove ca-certificates
 
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+# install "nss_wrapper" in case we need to fake "/etc/passwd" and "/etc/group" (especially for OpenShift)
+# https://github.com/docker-library/postgres/issues/359
+# https://cwrap.org/nss_wrapper.html
+		libnss-wrapper \
+# install "xz-utils" for .sql.xz docker-entrypoint-initdb.d files
+		xz-utils \
+	; \
+	rm -rf /var/lib/apt/lists/*
 
 RUN curl -o apt-repo-add.sh http://repo.postgrespro.ru/pgpro-12/keys/apt-repo-add.sh
 RUN sh apt-repo-add.sh

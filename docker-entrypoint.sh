@@ -266,6 +266,31 @@ _pg_want_help() {
 	return 1
 }
 
+pg_conf_check(){
+    eval "local V=\$$1"
+    if [ -z "$V" ]; then        
+        echo "$1 не указан"
+    else
+        echo "$1 = $V" >> "$PGDATA/postgresql.conf"
+        echo "$1 установлено значение '$V'"
+    fi
+}
+
+
+pg_conf_init() {
+	cat /custom.conf >> "$PGDATA/postgresql.conf"
+    echo "" >> "$PGDATA/postgresql.conf"
+    pg_conf_check shared_buffers
+    pg_conf_check effective_cache_size
+    pg_conf_check max_wal_size
+    pg_conf_check min_wal_size
+    pg_conf_check work_mem
+    pg_conf_check maintenance_work_mem
+    pg_conf_check wal_buffers
+    pg_conf_check checkpoint_completion_target
+    pg_conf_check default_statistics_target
+}
+
 _main() {
 	# if first arg looks like a flag, assume we want to run postgres server
 	if [ "${1:0:1}" = '-' ]; then
@@ -290,8 +315,8 @@ _main() {
 
 			docker_init_database_dir
 			pg_setup_hba_conf
+			pg_conf_init
 
-			cat /custom.conf >> "$PGDATA/postgresql.conf"
 			# PGPASSWORD is required for psql when authentication is required for 'local' connections via pg_hba.conf and is otherwise harmless
 			# e.g. when '--auth=md5' or '--auth-local=md5' is used in POSTGRES_INITDB_ARGS
 			export PGPASSWORD="${PGPASSWORD:-$POSTGRES_PASSWORD}"
