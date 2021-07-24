@@ -10,6 +10,11 @@ pyxdameraulevenshtein
 pystemmer
 ```
 
+Extra postgres modules
+```
+mysql_fdw
+```
+
 
 ```
 version: '3.1'
