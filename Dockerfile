@@ -81,7 +81,7 @@ RUN /opt/pgpro/std-12/bin/pg-setup find-free-port
 RUN cd /usr/src \
 	&& git clone https://github.com/EnterpriseDB/mysql_fdw.git \
 	&& cd mysql_fdw \
-	&& git checkout REL-2_6_0
+	&& git checkout REL-2_7_0
 
 RUN ln -s /bin/mkdir /usr/bin/mkdir
 
