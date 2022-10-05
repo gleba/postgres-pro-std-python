@@ -86,6 +86,7 @@ RUN cd /usr/src \
 RUN ln -s /bin/mkdir /usr/bin/mkdir
 
 RUN cd /usr/src/mysql_fdw \
+	&& sed -i -E -e 's/#define MAXDATALEN[[:space:]]+1024 \* 64/#define MAXDATALEN 1024 * 512/' mysql_fdw.h \
 	&& make USE_PGXS=1 \
 	&& make USE_PGXS=1 install
 
